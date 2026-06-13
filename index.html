@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -24,7 +23,7 @@ background:linear-gradient(135deg,#007bff,#0056b3);
 color:white;
 text-align:center;
 padding:80px 20px;
-} 
+}
 
 header h1{
 font-size:3rem;
@@ -122,37 +121,72 @@ border-radius:15px;
 margin-bottom:25px;
 }
 
-.chat-box{
-background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+/* ─── Pure CSS Expanding AI Help Matrix (Zero JS) ─── */
+.help-container {
+margin-top: 20px;
+display: flex;
+flex-direction: column;
+gap: 15px;
 }
 
-#chatMessages{
-height:300px;
-overflow-y:auto;
-border:1px solid #ddd;
-padding:10px;
-margin-bottom:15px;
+.ai-item {
+background: white;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0,0,0,.05);
+overflow: hidden;
 }
 
-.chat-input{
-display:flex;
-gap:10px;
+.ai-question {
+display: block;
+padding: 18px 20px;
+font-weight: bold;
+color: #007bff;
+cursor: pointer;
+background: #fff;
+position: relative;
+user-select: none;
 }
 
-.chat-input input{
-flex:1;
-padding:12px;
+.ai-question:hover {
+background: #fdfdfd;
 }
 
-.chat-input button{
-padding:12px 20px;
-background:#007bff;
-color:white;
-border:none;
-cursor:pointer;
+.ai-question::after {
+content: '▼';
+position: absolute;
+right: 20px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 0.8rem;
+color: #888;
+transition: transform 0.3s;
+}
+
+.ai-toggle {
+display: none;
+}
+
+.ai-toggle:checked ~ .ai-question::after {
+transform: translateY(-50%) rotate(180deg);
+}
+
+.ai-answer {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.3s ease-out;
+background: #fafafa;
+border-top: 0 solid #eee;
+}
+
+.ai-toggle:checked ~ .ai-answer {
+max-height: 400px;
+border-top: 1px solid #eee;
+}
+
+.ai-answer p {
+padding: 20px;
+line-height: 1.6;
+color: #444;
 }
 
 form{
@@ -195,19 +229,11 @@ margin-top:40px;
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-// ─── EmailJS Setup ───────────────────────────────────────────────
-// 1. Go to https://www.emailjs.com and create a free account
-// 2. Add an Email Service (Gmail recommended) → copy the Service ID below
-// 3. Create an Email Template with these variables:
-//      {{from_phone}}, {{from_budget}}, {{from_email}}, {{message}}
-//    Copy the Template ID below
-// 4. Go to Account → API Keys → copy your Public Key below
-const EMAILJS_PUBLIC_KEY  = "R_CPspu-rFGj4yk-I";   // ← replace
-const EMAILJS_SERVICE_ID  = "service_sbd8sxr";   // ← replace
-const EMAILJS_TEMPLATE_ID = "template_n34tysa";  // ← replace
+const EMAILJS_PUBLIC_KEY  = "R_CPspu-rFGj4yk-I";   
+const EMAILJS_SERVICE_ID  = "service_sbd8sxr";   
+const EMAILJS_TEMPLATE_ID = "template_n34tysa";  
 
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-// ─────────────────────────────────────────────────────────────────
 
 function showPage(page){
   document.querySelectorAll("section").forEach(
@@ -215,32 +241,6 @@ function showPage(page){
   );
   document.getElementById(page).classList.add("active");
   window.scrollTo(0,0);
-}
-
-function askAI(){
-  let input=document.getElementById("userInput");
-  let msg=input.value.toLowerCase();
-  if(msg==="") return;
-
-  let response="I don't know that yet. Please contact us.";
-
-  if(msg.includes("price") || msg.includes("cost")){
-    response="Our websites cost between €500 and €10,000 depending on customization.";
-  } else if(msg.includes("contact")){
-    response="Phone: +32 493 35 25 68 | Email: duboccage.loewi@student.rhizo.be";
-  } else if(msg.includes("website")){
-    response="Visit the Ask For A Website page and fill out the form.";
-  } else if(msg.includes("time") || msg.includes("long")){
-    response="Most websites take between 1 and 8 weeks depending on complexity.";
-  } else if(msg.includes("pages")){
-    response="The more you invest, the more pages and customization you receive.";
-  }
-
-  document.getElementById("chatMessages").innerHTML +=
-    "<p><b>You:</b> "+input.value+"</p>";
-  document.getElementById("chatMessages").innerHTML +=
-    "<p><b>AI:</b> "+response+"</p>";
-  input.value="";
 }
 
 function sendRequest(){
@@ -390,18 +390,58 @@ we can help bring your ideas online.
 
 <section id="aihelp">
 
-<h1>AI Help</h1>
+<h1>AI Knowledge Matrix</h1>
+<p style="color: #666; margin-bottom: 20px;">Click on any question below to instantly reveal the answer from our service database.</p>
 
-<div class="chat-box">
+<div class="help-container">
 
-<div id="chatMessages">
-<p><b>AI:</b> Hello! Ask me about prices, websites, contact information or development time.</p>
-</div>
+  <div class="ai-item">
+    <input type="checkbox" id="aiq1" class="ai-toggle">
+    <label for="aiq1" class="ai-question">What are your specific pricing options?</label>
+    <div class="ai-answer">
+      <p>Our website development packages span three tiers: Basic setups cost between €500 and €1,000; intermediate professional web hubs cost between €1,000 and €5,000; and elite enterprise custom builds cost between €5,000 and €10,000 depending on requirements.</p>
+    </div>
+  </div>
 
-<div class="chat-input">
-<input type="text" id="userInput" placeholder="Ask something...">
-<button onclick="askAI()">Send</button>
-</div>
+  <div class="ai-item">
+    <input type="checkbox" id="aiq2" class="ai-toggle">
+    <label for="aiq2" class="ai-question">How can I quickly contact your support or design team?</label>
+    <div class="ai-answer">
+      <p>You can reach us directly via <b>Phone:</b> +32 493 35 25 68 or via <b>Email:</b> duboccage.loewi@student.rhizo.be. We respond to all text and mail inquiries within 24 hours.</p>
+    </div>
+  </div>
+
+  <div class="ai-item">
+    <input type="checkbox" id="aiq3" class="ai-toggle">
+    <label for="aiq3" class="ai-question">How long does a website take to build from scratch?</label>
+    <div class="ai-answer">
+      <p>Most simple responsive websites take between 1 and 3 weeks to deploy. Custom enterprise sites, large dynamic portfolio setups, or fully integrated web systems take between 4 and 8 weeks depending entirely on complexity.</p>
+    </div>
+  </div>
+
+  <div class="ai-item">
+    <input type="checkbox" id="aiq4" class="ai-toggle">
+    <label for="aiq4" class="ai-question">Do you offer built-in Search Engine Optimization (SEO)?</label>
+    <div class="ai-answer">
+      <p>Yes! Full semantic markup layout and indexing SEO configurations are packaged with our intermediate (€1,000+) tiers. We ensure fast loading parameters, correct heading tags, and optimal responsive design to rank effectively on Google search indexes.</p>
+    </div>
+  </div>
+
+  <div class="ai-item">
+    <input type="checkbox" id="aiq5" class="ai-toggle">
+    <label for="aiq5" class="ai-question">What coding technologies do you build websites with?</label>
+    <div class="ai-answer">
+      <p>We work with clean structural HTML5 layouts, modern responsive CSS3 architectures, clean performance frameworks, and dynamic elements. We can also integrate modern web Content Management Systems (CMS) like WordPress or custom custom-tailored code solutions depending on your operational targets.</p>
+    </div>
+  </div>
+
+  <div class="ai-item">
+    <input type="checkbox" id="aiq6" class="ai-toggle">
+    <label for="aiq6" class="ai-question">How are domains and server web-hosting setups handled?</label>
+    <div class="ai-answer">
+      <p>Domain ownership and basic hosting billing remain registered to your name to guarantee absolute ownership of your digital assets. Our engineers will walk you through setting it up step-by-step or completely map out your domain servers for you during launch week.</p>
+    </div>
+  </div>
 
 </div>
 
